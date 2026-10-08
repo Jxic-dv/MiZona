@@ -1,0 +1,19 @@
+services:
+  db:
+    image: mysql:8.4
+    container_name: mizona-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mizona
+      MYSQL_USER: mizona
+      MYSQL_PASSWORD: mizona123
+    ports:
+      - "3308:3306"
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mizona_data:/var/lib/mysql
+      - ./db:/docker-entrypoint-initdb.d:ro
+
+volumes:
+  mizona_data:
