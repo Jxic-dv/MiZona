@@ -1,17 +1,14 @@
--- MiZona: esquema de base de datos (MySQL 8)
 SET NAMES utf8mb4;
 
 CREATE DATABASE IF NOT EXISTS mizona
   CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE mizona;
 
--- Catálogo de zonas de la municipalidad
 CREATE TABLE zonas (
   id_zona   INT AUTO_INCREMENT PRIMARY KEY,
   nombre    VARCHAR(40) NOT NULL UNIQUE
 );
 
--- Catálogo de categorías de aviso (luz, agua, drenajes, vialidad, obras, otros)
 CREATE TABLE categorias (
   id_categoria INT AUTO_INCREMENT PRIMARY KEY,
   nombre       VARCHAR(50) NOT NULL UNIQUE
@@ -28,7 +25,6 @@ CREATE TABLE usuarios (
   created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Avisos publicados
 CREATE TABLE avisos (
   id_aviso           BIGINT AUTO_INCREMENT PRIMARY KEY,
   id_categoria       INT NOT NULL,
@@ -49,7 +45,6 @@ CREATE TABLE avisos (
   INDEX idx_avisos_categoria (id_categoria)
 );
 
--- Un aviso puede afectar varias zonas (N:M)
 CREATE TABLE aviso_zonas (
   id_aviso BIGINT NOT NULL,
   id_zona  INT NOT NULL,
@@ -68,7 +63,6 @@ CREATE TABLE suscriptores (
   created_at         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Un suscriptor puede seguir varias zonas (N:M)
 CREATE TABLE suscripcion_zonas (
   id_suscriptor BIGINT NOT NULL,
   id_zona       INT NOT NULL,

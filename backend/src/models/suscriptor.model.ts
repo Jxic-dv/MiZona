@@ -6,7 +6,6 @@ export interface Suscriptor {
   tokenBaja: string;
 }
 
-/** Datos mínimos para enviar un aviso a un suscriptor. */
 export interface Destinatario {
   id: number;
   email: string;

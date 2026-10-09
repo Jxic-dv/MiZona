@@ -72,7 +72,6 @@ async function cargarZonas(avisoIds: number[]): Promise<Map<number, ZonaResumen[
   return mapa;
 }
 
-// ---------- Escritura (las que participan en transacciones reciben la conexión) ----------
 
 export interface DatosAviso {
   titulo: string;
@@ -156,7 +155,6 @@ export async function sincronizarEstados(): Promise<void> {
   );
 }
 
-// ---------- Lectura ----------
 
 export async function buscarPorId(id: number): Promise<Aviso | null> {
   const [rows] = await pool.query<AvisoRow[]>(`${SELECT_AVISO} WHERE a.id_aviso = ?`, [id]);

@@ -3,7 +3,6 @@ import type { CatalogoRepository } from '../repositories/catalogo.repository';
 import { AppError } from '../utils/app-error';
 import { esErrorMysql } from '../utils/mysql-error';
 
-/** Lógica de negocio compartida por los catálogos simples (zonas y categorías). */
 export class CatalogoService {
   private readonly repo: CatalogoRepository;
   private readonly entidad: string; // en minúscula y femenino: "zona", "categoría"

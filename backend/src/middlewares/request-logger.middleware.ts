@@ -1,6 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
 
-/** Registro básico de cada petición: método, ruta, código de estado y duración. */
 export function requestLogger(req: Request, res: Response, next: NextFunction): void {
   const inicio = Date.now();
   res.on('finish', () => {

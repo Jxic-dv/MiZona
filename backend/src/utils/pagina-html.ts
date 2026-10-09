@@ -1,6 +1,5 @@
 import { config } from '../config/env';
 
-/** Página simple que se muestra al abrir los enlaces de los correos (confirmar / darse de baja). */
 export function paginaHtml(titulo: string, mensaje: string): string {
   return `<!doctype html>
 <html lang="es">

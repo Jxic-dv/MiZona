@@ -3,7 +3,6 @@ import { catalogoSchema } from '../schemas/catalogo.schema';
 import type { CatalogoService } from '../services/catalogo.service';
 import { parseId } from '../utils/parse-id';
 
-/** Crea los handlers HTTP de un catálogo a partir de su servicio. */
 export function crearCatalogoController(service: CatalogoService) {
   return {
     async listar(_req: Request, res: Response): Promise<void> {

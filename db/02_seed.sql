@@ -1,4 +1,3 @@
--- MiZona: datos iniciales
 -- El archivo está en UTF-8; fija también la codificación del cliente que lo importa.
 SET NAMES utf8mb4;
 USE mizona;

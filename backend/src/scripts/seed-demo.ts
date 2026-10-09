@@ -56,7 +56,6 @@ async function main(): Promise<void> {
     return;
   }
 
-  // ---- Funcionarios ----
   const passwordHash = await bcrypt.hash(PASSWORD_DEMO, 10);
   const funcionarioId = await usuarioRepository.crear({
     nombre: 'Funcionario Demo',
@@ -73,7 +72,6 @@ async function main(): Promise<void> {
     activo: false,
   });
 
-  // ---- Avisos ----
   const avisos: Array<{
     titulo: string;
     descripcion: string;
@@ -185,7 +183,6 @@ async function main(): Promise<void> {
     creados.push({ id, zonas, estado: aviso.estado });
   }
 
-  // ---- Suscriptores (correos ficticios @example.com) ----
   const suscriptores = [
     { email: 'vecino1@example.com', zonas: [1, 4], confirmado: true },
     { email: 'vecino2@example.com', zonas: [1], confirmado: true },

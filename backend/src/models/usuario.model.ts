@@ -15,7 +15,6 @@ export interface UsuarioConPassword extends Usuario {
   passwordHash: string;
 }
 
-/** Contenido del JWT. */
 export interface TokenPayload {
   sub: string; // id del usuario (el estándar JWT exige que sub sea string)
   nombre: string;

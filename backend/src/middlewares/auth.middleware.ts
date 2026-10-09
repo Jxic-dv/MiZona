@@ -5,7 +5,6 @@ import type { Rol, TokenPayload } from '../models/usuario.model';
 import * as usuarioRepository from '../repositories/usuario.repository';
 import { AppError } from '../utils/app-error';
 
-/** Exige un JWT válido en la cabecera Authorization: Bearer <token>. */
 export async function authRequired(req: Request, res: Response, next: NextFunction): Promise<void> {
   const header = req.headers.authorization;
   if (!header?.startsWith('Bearer ')) {

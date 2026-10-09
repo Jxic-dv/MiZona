@@ -10,7 +10,6 @@ export interface TokenPayload {
   rol: Rol;
 }
 
-/** Exige un JWT válido en la cabecera Authorization: Bearer <token>. */
 export function authRequired(req: Request, res: Response, next: NextFunction): void {
   const header = req.headers.authorization;
   if (!header?.startsWith('Bearer ')) {

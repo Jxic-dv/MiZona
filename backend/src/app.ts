@@ -21,7 +21,6 @@ if (!config.isTest) {
   app.use(requestLogger);
 }
 
-// Comprueba que la API y la base de datos responden
 app.get('/api/health', async (_req, res) => {
   await pool.query('SELECT 1');
   res.json({ status: 'ok', db: 'conectada' });

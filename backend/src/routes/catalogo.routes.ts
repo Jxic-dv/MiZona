@@ -2,7 +2,6 @@ import { Router } from 'express';
 import type { CatalogoController } from '../controllers/catalogo.controller';
 import { authRequired, requireRole } from '../middlewares/auth.middleware';
 
-/** Lectura pública; crear, editar y eliminar solo para ADMIN. */
 export function crearCatalogoRouter(controller: CatalogoController): Router {
   const router = Router();
 

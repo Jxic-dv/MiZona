@@ -62,7 +62,6 @@ export async function obtener(id: number): Promise<Aviso> {
   return aviso;
 }
 
-/** Proceso principal: crea el aviso con sus zonas (transacción) y notifica a los suscriptores. */
 export async function crear(usuario: TokenPayload, datos: AvisoInput): Promise<ResultadoAviso> {
   validarFechaFin(datos);
   const zonaIds = [...new Set<number>(datos.zonaIds)];
