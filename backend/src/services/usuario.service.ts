@@ -3,6 +3,7 @@ import { aPublico, type Usuario } from '../models/usuario.model';
 import * as usuarioRepository from '../repositories/usuario.repository';
 import type { ActualizarPerfilInput, ListarUsuariosQuery } from '../schemas/usuario.schema';
 import { AppError } from '../utils/app-error';
+import { armarPagina } from '../utils/paginacion';
 
 export async function obtenerPerfil(id: number): Promise<Usuario> {
   const usuario = await usuarioRepository.buscarPorId(id);
@@ -38,13 +39,7 @@ export async function actualizarPerfil(id: number, datos: ActualizarPerfilInput)
 
 export async function listar(filtros: ListarUsuariosQuery) {
   const { items, total } = await usuarioRepository.listar(filtros);
-  return {
-    items: items.map(aPublico),
-    total,
-    page: filtros.page,
-    limit: filtros.limit,
-    totalPages: Math.ceil(total / filtros.limit),
-  };
+  return armarPagina(items.map(aPublico), total, filtros.page, filtros.limit);
 }
 
 export async function cambiarActivo(adminId: number, id: number, activo: boolean): Promise<Usuario> {

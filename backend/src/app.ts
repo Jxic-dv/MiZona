@@ -1,14 +1,25 @@
 import cors from 'cors';
 import express from 'express';
+import helmet from 'helmet';
 import { pool } from './config/db';
 import { config } from './config/env';
 import { errorHandler, notFound } from './middlewares/error.middleware';
+import { requestLogger } from './middlewares/request-logger.middleware';
 import { apiRouter } from './routes/index';
 
 export const app = express();
 
+// Detrás de un proxy (Render, Railway...) hay que activarlo para identificar la IP real
+if (config.trustProxy) {
+  app.set('trust proxy', 1);
+}
+
+app.use(helmet());
 app.use(cors({ origin: config.corsOrigin }));
 app.use(express.json({ limit: '100kb' }));
+if (!config.isTest) {
+  app.use(requestLogger);
+}
 
 // Comprueba que la API y la base de datos responden
 app.get('/api/health', async (_req, res) => {

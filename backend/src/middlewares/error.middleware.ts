@@ -39,6 +39,10 @@ export function errorHandler(err: unknown, _req: Request, res: Response, _next: 
     res.status(409).json({ error: 'El registro ya existe' });
     return;
   }
+  if (esErrorMysql(err, 'ER_NO_REFERENCED_ROW_2')) {
+    res.status(400).json({ error: 'La categoría o alguna de las zonas indicadas no existe' });
+    return;
+  }
   if (esErrorMysql(err, 'ER_ROW_IS_REFERENCED_2')) {
     res.status(409).json({ error: 'No se puede eliminar porque el registro está en uso' });
     return;

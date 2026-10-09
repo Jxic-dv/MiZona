@@ -6,7 +6,7 @@ const nombre = z
   .min(2, 'El nombre debe tener al menos 2 caracteres')
   .max(120, 'El nombre no puede superar 120 caracteres');
 
-const email = z
+export const emailSchema = z
   .string()
   .trim()
   .toLowerCase()
@@ -20,12 +20,12 @@ const passwordNueva = z
 
 export const registerSchema = z.object({
   nombre,
-  email,
+  email: emailSchema,
   password: passwordNueva,
 });
 
 export const loginSchema = z.object({
-  email,
+  email: emailSchema,
   password: z.string().min(1, 'La contraseña es obligatoria'),
 });
 

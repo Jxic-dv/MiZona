@@ -10,4 +10,6 @@ export const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   charset: 'utf8mb4',
+  // Todas las fechas se guardan y leen en UTC; el frontend las muestra en hora local
+  timezone: 'Z',
 });

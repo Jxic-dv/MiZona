@@ -1,0 +1,278 @@
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}/api
+@qaSuffix = {{$guid}}
+@adminEmail =admin@test.com
+@adminPassword =admin
+@qaEmail = funcionario-{{qaSuffix}}@example.com
+@qaPassword = Demo12345
+
+### Health check (200)
+GET {{apiUrl}}/health
+
+### Iniciar sesion como administrador
+# Ajusta estas credenciales si tu .env usa otro administrador.
+# @name iniciarSesionAdmin
+POST {{apiUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{adminEmail}}",
+  "password": "{{adminPassword}}"
+}
+
+### Consultar usuario autenticado (200)
+GET {{apiUrl}}/auth/me
+Authorization: Bearer {{iniciarSesionAdmin.response.body.$.token}}
+
+### Registrar funcionario QA (201; la cuenta inicia inactiva)
+# @name registrarFuncionarioQA
+POST {{apiUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "nombre": "Funcionario QA {{qaSuffix}}",
+  "email": "{{qaEmail}}",
+  "password": "{{qaPassword}}"
+}
+
+### Intentar iniciar sesion con funcionario inactivo (403 esperado)
+POST {{apiUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{qaEmail}}",
+  "password": "{{qaPassword}}"
+}
+
+### Buscar funcionario QA para obtener su ID
+# @name buscarFuncionarioQA
+GET {{apiUrl}}/usuarios?q={{qaSuffix}}&limit=100
+Authorization: Bearer {{iniciarSesionAdmin.response.body.$.token}}
+
+### Activar funcionario QA (200)
+# @name activarFuncionarioQA
+PATCH {{apiUrl}}/usuarios/{{buscarFuncionarioQA.response.body.$.items[0].id}}/activo
+Authorization: Bearer {{iniciarSesionAdmin.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "activo": true
+}
+
+### Iniciar sesion como funcionario activo
+# @name iniciarSesionFuncionarioQA
+POST {{apiUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{qaEmail}}",
+  "password": "{{qaPassword}}"
+}
+
+### Consultar perfil propio (200)
+GET {{apiUrl}}/usuarios/me
+Authorization: Bearer {{iniciarSesionFuncionarioQA.response.body.$.token}}
+
+### Actualizar perfil propio (200)
+PUT {{apiUrl}}/usuarios/me
+Authorization: Bearer {{iniciarSesionFuncionarioQA.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "nombre": "Funcionario QA actualizado {{qaSuffix}}"
+}
+
+### Listar usuarios como administrador (200)
+GET {{apiUrl}}/usuarios?page=1&limit=10&q=funcionario&activo=true
+Authorization: Bearer {{iniciarSesionAdmin.response.body.$.token}}
+
+### Consultar zonas (200)
+# @name listarZonas
+GET {{apiUrl}}/zonas
+
+### Consultar primera zona disponible (200)
+GET {{apiUrl}}/zonas/{{listarZonas.response.body.$[0].id}}
+
+### Crear zona temporal (201)
+# Se usa en los avisos y suscripciones de QA; se elimina al final.
+# @name crearZonaQA
+POST {{apiUrl}}/zonas
+Authorization: Bearer {{iniciarSesionAdmin.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "nombre": "ZQA{{qaSuffix}}"
+}
+
+### Actualizar zona temporal (200)
+PUT {{apiUrl}}/zonas/{{crearZonaQA.response.body.$.id}}
+Authorization: Bearer {{iniciarSesionAdmin.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "nombre": "ZQAU{{qaSuffix}}"
+}
+
+### Consultar zona temporal actualizada (200)
+GET {{apiUrl}}/zonas/{{crearZonaQA.response.body.$.id}}
+
+### Consultar categorias (200)
+# @name listarCategorias
+GET {{apiUrl}}/categorias
+
+### Consultar primera categoria disponible (200)
+GET {{apiUrl}}/categorias/{{listarCategorias.response.body.$[0].id}}
+
+### Crear categoria temporal (201)
+# @name crearCategoriaQA
+POST {{apiUrl}}/categorias
+Authorization: Bearer {{iniciarSesionAdmin.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "nombre": "CQA{{qaSuffix}}"
+}
+
+### Actualizar categoria temporal (200)
+PUT {{apiUrl}}/categorias/{{crearCategoriaQA.response.body.$.id}}
+Authorization: Bearer {{iniciarSesionAdmin.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "nombre": "CQU{{qaSuffix}}"
+}
+
+### Consultar categoria temporal actualizada (200)
+GET {{apiUrl}}/categorias/{{crearCategoriaQA.response.body.$.id}}
+
+### Listar avisos vigentes con filtros y paginacion (200)
+GET {{apiUrl}}/avisos?estado=VIGENTES&zonaId={{crearZonaQA.response.body.$.id}}&categoriaId={{crearCategoriaQA.response.body.$.id}}&page=1&limit=10&orden=desc
+
+### Crear aviso para probar actualizacion y cancelacion (201)
+# @name crearAvisoCancelarQA
+POST {{apiUrl}}/avisos
+Authorization: Bearer {{iniciarSesionFuncionarioQA.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "titulo": "Aviso QA cancelacion {{qaSuffix}}",
+  "descripcion": "Aviso temporal para probar la API.",
+  "ubicacionDetalle": "Zona QA",
+  "categoriaId": {{crearCategoriaQA.response.body.$.id}},
+  "zonaIds": [{{crearZonaQA.response.body.$.id}}],
+  "fechaInicio": "2099-01-01T10:00:00-06:00",
+  "fechaFinEstimada": null
+}
+
+### Consultar avisos con busqueda y rango de fechas (200)
+GET {{apiUrl}}/avisos?q=Aviso%20QA&desde=2099-01-01&hasta=2099-12-31&estado=TODOS&page=1&limit=10
+
+### Consultar aviso creado (200)
+GET {{apiUrl}}/avisos/{{crearAvisoCancelarQA.response.body.$.aviso.id}}
+
+### Actualizar aviso (200)
+PUT {{apiUrl}}/avisos/{{crearAvisoCancelarQA.response.body.$.aviso.id}}
+Authorization: Bearer {{iniciarSesionFuncionarioQA.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "titulo": "Aviso QA actualizado {{qaSuffix}}",
+  "descripcion": "Aviso temporal actualizado para probar la API.",
+  "ubicacionDetalle": "Zona QA, sector central",
+  "categoriaId": {{crearCategoriaQA.response.body.$.id}},
+  "zonaIds": [{{crearZonaQA.response.body.$.id}}],
+  "fechaInicio": "2099-01-01T10:00:00-06:00",
+  "fechaFinEstimada": null
+}
+
+### Cancelar aviso (200)
+POST {{apiUrl}}/avisos/{{crearAvisoCancelarQA.response.body.$.aviso.id}}/cancelar
+Authorization: Bearer {{iniciarSesionFuncionarioQA.response.body.$.token}}
+
+### Eliminar aviso cancelado (204)
+DELETE {{apiUrl}}/avisos/{{crearAvisoCancelarQA.response.body.$.aviso.id}}
+Authorization: Bearer {{iniciarSesionAdmin.response.body.$.token}}
+
+### Crear aviso para probar finalizacion (201)
+# @name crearAvisoFinalizarQA
+POST {{apiUrl}}/avisos
+Authorization: Bearer {{iniciarSesionAdmin.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "titulo": "Aviso QA finalizacion {{qaSuffix}}",
+  "descripcion": "Aviso temporal para probar la finalizacion.",
+  "categoriaId": {{crearCategoriaQA.response.body.$.id}},
+  "zonaIds": [{{crearZonaQA.response.body.$.id}}],
+  "fechaInicio": "2099-01-01T10:00:00-06:00",
+  "fechaFinEstimada": null
+}
+
+### Finalizar aviso (200)
+POST {{apiUrl}}/avisos/{{crearAvisoFinalizarQA.response.body.$.aviso.id}}/finalizar
+Authorization: Bearer {{iniciarSesionAdmin.response.body.$.token}}
+
+### Eliminar aviso finalizado (204)
+DELETE {{apiUrl}}/avisos/{{crearAvisoFinalizarQA.response.body.$.aviso.id}}
+Authorization: Bearer {{iniciarSesionAdmin.response.body.$.token}}
+
+### Crear aviso para probar eliminacion (201)
+# @name crearAvisoEliminarQA
+POST {{apiUrl}}/avisos
+Authorization: Bearer {{iniciarSesionAdmin.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "titulo": "Aviso QA eliminacion {{qaSuffix}}",
+  "descripcion": "Aviso temporal para probar la eliminacion.",
+  "categoriaId": {{crearCategoriaQA.response.body.$.id}},
+  "zonaIds": [{{crearZonaQA.response.body.$.id}}],
+  "fechaInicio": "2099-01-01T10:00:00-06:00",
+  "fechaFinEstimada": null
+}
+
+### Eliminar aviso (204)
+DELETE {{apiUrl}}/avisos/{{crearAvisoEliminarQA.response.body.$.aviso.id}}
+Authorization: Bearer {{iniciarSesionAdmin.response.body.$.token}}
+
+### Suscribirse a una zona (201)
+# @name crearSuscripcionQA
+POST {{apiUrl}}/suscripciones
+Content-Type: application/json
+
+{
+  "email": "suscripcion-{{qaSuffix}}@example.com",
+  "zonaIds": [{{crearZonaQA.response.body.$.id}}]
+}
+
+### Confirmar suscripcion (HTML)
+# Copia el token de confirmacion desde el enlace en la vista previa Ethereal
+# que aparece en la consola del backend despues de crear la suscripcion.
+@tokenConfirmacion = PEGA_AQUI_EL_TOKEN_DE_CONFIRMACION
+GET {{apiUrl}}/suscripciones/confirmar/{{tokenConfirmacion}}
+
+### Cancelar suscripcion (HTML)
+# Usa el token de baja del mismo correo; es distinto del token de confirmacion.
+@tokenBaja = PEGA_AQUI_EL_TOKEN_DE_BAJA
+GET {{apiUrl}}/suscripciones/baja/{{tokenBaja}}
+
+### Consultar dashboard (200; ADMIN o FUNCIONARIO)
+GET {{apiUrl}}/dashboard
+Authorization: Bearer {{iniciarSesionAdmin.response.body.$.token}}
+
+### Desactivar funcionario QA (200; deja la cuenta temporal inactiva)
+PATCH {{apiUrl}}/usuarios/{{buscarFuncionarioQA.response.body.$.items[0].id}}/activo
+Authorization: Bearer {{iniciarSesionAdmin.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "activo": false
+}
+
+### Eliminar categoria temporal (204)
+DELETE {{apiUrl}}/categorias/{{crearCategoriaQA.response.body.$.id}}
+Authorization: Bearer {{iniciarSesionAdmin.response.body.$.token}}
+
+### Eliminar zona temporal (204)
+DELETE {{apiUrl}}/zonas/{{crearZonaQA.response.body.$.id}}
+Authorization: Bearer {{iniciarSesionAdmin.response.body.$.token}}
