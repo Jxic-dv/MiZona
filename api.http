@@ -1,0 +1,173 @@
+### MiZona API - solicitudes para la extension REST Client de VS Code
+### Inicia MySQL y el backend antes de ejecutar las solicitudes.
+### El backend escucha por defecto en http://localhost:3000.
+###
+### Configura las credenciales de un administrador existente en estas variables.
+### Para el flujo de registro, cambia el correo de prueba en cada ejecucion si ya existe.
+
+@baseUrl = http://localhost:3000/api
+@adminEmail = admin@test.com
+@adminPassword = admin
+@testEmail = funcionario.prueba@mizona.local
+@testPassword = PruebaMiZona123
+@usuarioId = 2
+
+### Estado de API y conexion a base de datos
+# Esperado: 200 { "status": "ok", "db": "conectada" }
+GET {{baseUrl}}/health
+Accept: application/json
+
+### Registrar un funcionario de prueba (queda inactivo hasta que admin lo active)
+# Esperado: 201. Cambia @testEmail si el correo ya fue registrado.
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "nombre": "Funcionario de prueba",
+  "email": "{{testEmail}}",
+  "password": "{{testPassword}}"
+}
+
+### Iniciar sesion como administrador
+# Esperado: 200 con token y usuario. Configura @adminEmail y @adminPassword arriba.
+# El administrador debe existir; se crea con el script seed:admin del backend.
+# @name loginAdmin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{adminEmail}}",
+  "password": "{{adminPassword}}"
+}
+
+### Consultar identidad del administrador autenticado
+# Esperado: 200
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+Accept: application/json
+
+### Consultar perfil propio
+# Esperado: 200
+GET {{baseUrl}}/usuarios/me
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+Accept: application/json
+
+### Actualizar nombre del perfil propio
+# Esperado: 200. Cambia el nombre de prueba si no quieres modificar el nombre actual.
+PUT {{baseUrl}}/usuarios/me
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "nombre": "Administrador de prueba"
+}
+
+### Listar usuarios (solo ADMIN)
+# Esperado: 200 con items, total, page, limit y totalPages.
+GET {{baseUrl}}/usuarios?page=1&limit=10&q={{testEmail}}
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+Accept: application/json
+
+### Activar el funcionario de prueba (solo ADMIN)
+# Primero ejecuta "Listar usuarios" y reemplaza @usuarioId arriba por el id del correo de prueba.
+# Esperado: 200. No uses el id de tu propio administrador.
+PATCH {{baseUrl}}/usuarios/{{usuarioId}}/activo
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "activo": true
+}
+
+### Iniciar sesion como funcionario de prueba (despues de activarlo)
+# Esperado: 200 con token y usuario.
+# @name loginFuncionario
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{testEmail}}",
+  "password": "{{testPassword}}"
+}
+
+### Consultar identidad del funcionario autenticado
+# Esperado: 200
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{loginFuncionario.response.body.$.token}}
+Accept: application/json
+
+### Consultar zonas
+# Esperado: 200 con una lista. El seed inicial crea Zona 1 con id 1.
+GET {{baseUrl}}/zonas
+Accept: application/json
+
+### Consultar una zona existente
+# Esperado: 200. Usa un id existente de la lista anterior.
+GET {{baseUrl}}/zonas/1
+Accept: application/json
+
+### Crear una zona de prueba (solo ADMIN)
+# Esperado: 201. Guarda el id retornado para las solicitudes siguientes.
+# @name crearZona
+POST {{baseUrl}}/zonas
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "nombre": "Zona de prueba API"
+}
+
+### Actualizar la zona de prueba (solo ADMIN)
+# Esperado: 200. Ejecuta primero "Crear una zona de prueba".
+PUT {{baseUrl}}/zonas/{{crearZona.response.body.$.id}}
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "nombre": "Zona de prueba API editada"
+}
+
+### Eliminar la zona de prueba (solo ADMIN)
+# Esperado: 204. Ejecuta despues de crearla; no elimina zonas del seed.
+DELETE {{baseUrl}}/zonas/{{crearZona.response.body.$.id}}
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+### Consultar categorias
+# Esperado: 200 con una lista. El seed inicial crea categorias.
+GET {{baseUrl}}/categorias
+Accept: application/json
+
+### Consultar una categoria existente
+# Esperado: 200. Usa un id existente de la lista anterior.
+GET {{baseUrl}}/categorias/3
+Accept: application/json
+
+### Crear una categoria de prueba (solo ADMIN)
+# Esperado: 201. Guarda el id retornado para las solicitudes siguientes.
+# @name crearCategoria
+POST {{baseUrl}}/categorias
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "nombre": "Prueba API"
+}
+
+### Actualizar la categoria de prueba (solo ADMIN)
+# Esperado: 200. Ejecuta primero "Crear una categoria de prueba".
+PUT {{baseUrl}}/categorias/{{crearCategoria.response.body.$.id}}
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "nombre": "Prueba API editada"
+}
+
+### Eliminar la categoria de prueba (solo ADMIN)
+# Esperado: 204. Ejecuta despues de crearla; no elimina categorias del seed.
+DELETE {{baseUrl}}/categorias/{{crearCategoria.response.body.$.id}}
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+### Alcance actual
+# La propuesta contempla endpoints de avisos, suscripciones y dashboard,
+# pero esas rutas aun no estan implementadas/conectadas en el backend.
