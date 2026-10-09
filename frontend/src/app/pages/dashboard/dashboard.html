@@ -1,0 +1,95 @@
+<div class="page-heading">
+  <div>
+    <span class="eyebrow">EL PULSO DE TU COMUNIDAD</span>
+    <h1>Hola, {{ auth.usuario()?.nombre?.split(' ')?.[0] }}</h1>
+    <p>Así va la comunicación con los vecinos de tu ciudad.</p>
+  </div>
+  <a class="button primary" routerLink="/panel/avisos/nuevo"><mz-icon name="plus" /> Crear aviso</a>
+</div>
+@if (error()) {
+  <div class="alert error" role="alert">
+    {{ error() }} <button class="text-link" (click)="cargar()">Reintentar</button>
+  </div>
+}
+@if (cargando()) {
+  <div class="loading-state" role="status">
+    <span class="spinner"></span>Consultando indicadores…
+  </div>
+} @else if (resumen(); as r) {
+  <div class="stats-grid">
+    <article class="stat-card">
+      <span><mz-icon name="bell" /> Avisos vigentes</span
+      ><strong>{{ r.avisosPorEstado.ACTIVO + r.avisosPorEstado.PROGRAMADO }}</strong
+      ><small
+        >{{ r.avisosPorEstado.ACTIVO }} activos ·
+        {{ r.avisosPorEstado.PROGRAMADO }} programados</small
+      >
+    </article>
+    <article class="stat-card">
+      <span><mz-icon name="user" /> Vecinos suscritos</span
+      ><strong>{{ r.suscriptores.confirmados }}</strong
+      ><small>{{ r.suscriptores.pendientes }} pendientes de confirmar</small>
+    </article>
+    <article class="stat-card">
+      <span><mz-icon name="mail" /> Correos enviados</span
+      ><strong>{{ r.notificaciones.enviadas }}</strong
+      ><small>{{ r.notificaciones.fallidas }} envíos fallidos</small>
+    </article>
+  </div>
+  <div class="dashboard-grid">
+    <section class="chart-card">
+      <div class="section-heading">
+        <h2>Avisos por servicio</h2>
+        <mz-icon name="works" />
+      </div>
+      @for (c of r.avisosPorCategoria; track c.categoria) {
+        <div class="bar-row">
+          <div>
+            <span>{{ c.categoria }}</span
+            ><strong>{{ c.total }}</strong>
+          </div>
+          <div class="bar-track">
+            <div [style.width.%]="(c.total / maxCategoria()) * 100"></div>
+          </div>
+        </div>
+      } @empty {
+        <p class="help">Los servicios aparecerán al crear categorías.</p>
+      }
+    </section>
+    <section class="chart-card">
+      <h2>Estado de los avisos</h2>
+      @for (e of opciones; track e) {
+        <div class="state-row">
+          <span class="badge" [attr.data-state]="e">{{ estados[e] }}</span
+          ><strong>{{ r.avisosPorEstado[e] }}</strong>
+        </div>
+      }
+    </section>
+    <section class="chart-card">
+      <h2>Zonas con más avisos</h2>
+      <p class="help">Hasta 10 zonas con publicaciones registradas.</p>
+      @for (z of r.avisosPorZona; track z.zona; let i = $index) {
+        <div class="zone-rank">
+          <span>{{ i + 1 }}</span
+          ><strong>{{ z.zona }}</strong
+          ><span>{{ z.total }} avisos</span>
+        </div>
+      } @empty {
+        <p class="empty-inline">Todavía no hay avisos asociados a zonas.</p>
+      }
+    </section>
+    <section class="chart-card">
+      <h2>Publicaciones recientes</h2>
+      <p class="help">Avisos creados durante los últimos 14 días.</p>
+      @for (d of r.avisosUltimos14Dias; track d.fecha) {
+        <div class="state-row">
+          <span>{{ d.fecha }}</span
+          ><strong>{{ d.total }}</strong>
+        </div>
+      } @empty {
+        <p class="empty-inline">No hay publicaciones en este período.</p>
+      }
+    </section>
+  </div>
+  <p class="help">Los indicadores se calculan a partir de los registros actuales del sistema.</p>
+}

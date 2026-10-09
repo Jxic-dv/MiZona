@@ -1,0 +1,124 @@
+:host {
+  display: block;
+}
+.community-bar {
+  background: var(--pine);
+  color: #e1eee7;
+  font-size: 0.72rem;
+  padding: 9px 0;
+}
+.community-bar .container {
+  display: flex;
+  justify-content: space-between;
+}
+.community-bar span {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #bed989;
+}
+.site-header {
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 96px;
+  gap: 24px;
+}
+.header-inner nav {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+.header-inner nav > a {
+  font-size: 0.85rem;
+  text-decoration: none;
+  font-weight: 600;
+}
+.header-inner nav > a.active:not(.button) {
+  color: var(--green);
+}
+.staff-link {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  border-left: 1px solid var(--line);
+  padding-left: 28px;
+}
+.mobile-menu {
+  display: none;
+}
+@media (max-width: 760px) {
+  .community-bar .container > span:last-child {
+    display: none;
+  }
+  .header-inner {
+    min-height: 82px;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+  .mobile-menu {
+    display: block;
+  }
+  .header-inner nav {
+    display: none;
+    width: 100%;
+    align-items: stretch;
+    gap: 4px;
+    flex-direction: column;
+    padding: 10px 0;
+  }
+  .header-inner nav.open {
+    display: flex;
+  }
+  .header-inner nav > a {
+    padding: 12px;
+  }
+  .staff-link {
+    border: 0;
+  }
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--display);
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--pine);
+  text-decoration: none;
+  letter-spacing: -1px;
+}
+.brand-icon {
+  display: grid;
+  place-items: center;
+  background: var(--pine);
+  color: var(--lime);
+  border-radius: 12px;
+  width: 42px;
+  height: 46px;
+}
+.brand-icon mz-icon {
+  font-size: 24px;
+}
+.brand-accent {
+  color: var(--green);
+}
+.brand small {
+  display: block;
+  letter-spacing: 1.65px;
+  font-family: var(--body);
+  font-size: 0.5rem;
+  margin-top: 2px;
+  font-weight: 600;
+}

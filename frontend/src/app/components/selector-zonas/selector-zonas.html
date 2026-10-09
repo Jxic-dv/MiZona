@@ -1,0 +1,11 @@
+<div class="zone-picker" [class.wide]="columnas() === 5">
+  @for (z of zonas(); track z.id) {
+    <label class="zone-option"
+      ><input
+        type="checkbox"
+        [checked]="seleccionadas().includes(z.id)"
+        (change)="toggle(z.id)"
+      /><span>{{ z.nombre }}</span></label
+    >
+  }
+</div>

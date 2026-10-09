@@ -1,59 +1,93 @@
-# Frontend
+# MiZona · Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.1.8.
+Aplicación Angular conectada al backend Express de este repositorio.
 
-## Development server
+## Iniciar en desarrollo
 
-To start a local development server, run:
+Desde la raíz del proyecto, con las dependencias instaladas:
 
-```bash
-ng serve
+```sh
+# Terminal 1: backend (requiere su .env y MySQL)
+pnpm --filter backend dev
+
+# Terminal 2: frontend
+pnpm --filter frontend start
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Abre http://localhost:4200. `proxy.conf.json` dirige `/api/**` al backend en
+`http://127.0.0.1:3000`. Si cambias el puerto del backend, actualiza ese archivo.
 
-## Code scaffolding
+## Pantallas
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- `/`: avisos públicos, búsqueda, categorías, zonas, estados, fechas y paginación.
+- `/avisos/:id`: detalle público; compatible con los enlaces de los correos.
+- `/suscribirme`: suscripción por correo a una o varias zonas.
+- `/acceso`: inicio de sesión y solicitud de cuenta de funcionario.
+- `/panel/avisos`: gestión de publicaciones según permisos.
+- `/panel/avisos/nuevo` y `/panel/avisos/:id/editar`: publicación y edición.
+- `/panel/resumen`, `/panel/zonas`, `/panel/categorias`, `/panel/usuarios`:
+  administración exclusiva para ADMIN.
+- `/panel/perfil`: nombre y contraseña del usuario autenticado.
 
-```bash
-ng generate component component-name
+Los funcionarios nuevos requieren activación por un administrador. El vecino no
+necesita cuenta. La confirmación y baja de suscripciones se resuelven en las
+páginas HTML del backend enlazadas desde los correos.
+
+El token se conserva en `sessionStorage` durante la sesión de la pestaña. Las
+rutas protegidas comprueban el perfil en el backend y el servidor sigue siendo
+la autoridad para permisos. Los formularios de fecha usan hora de Guatemala
+(UTC−6) y envían ISO en UTC.
+
+## Diseño
+
+Verde bosque, salvia, marfil y acentos ámbar. Tipografías Manrope y DM Sans
+incluidas localmente con sus licencias en `public/fonts`; no necesitan conexión
+a Google Fonts. Ilustración e iconos SVG propios, navegación por teclado,
+mensajes de carga/error y presentación adaptable a móvil.
+
+## Organización del código
+
+```text
+src/app/
+├── components/       # Navbar, footer, iconos, portada, tarjetas, paginación y zonas
+├── pages/            # Una carpeta por pantalla: .ts, .html y .css
+├── services/         # Autenticación, API, avisos, catálogos, usuarios y suscripciones
+├── models/           # Interfaces de datos y contratos del backend
+├── interceptors/     # Token de sesión en peticiones HTTP
+├── guards/           # Acceso autenticado y rol de administrador
+├── utils/            # Fechas, mensajes de error e iconos por categoría
+├── app.routes.ts     # Rutas y carga diferida de las pantallas
+└── app.ts            # Composición del navbar, contenido y footer
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Las páginas coordinan sus formularios y consumen servicios; los endpoints están
+centralizados en `services/`. Los componentes reutilizables reciben datos mediante
+inputs y comunican cambios mediante outputs o `model()`.
 
-```bash
-ng generate --help
+Cada pantalla y componente tiene su plantilla y estilos separados. `styles.css`
+conserva las fuentes, la paleta y las reglas compartidas de botones, formularios,
+tablas y estados. Las pruebas `.spec.ts` están junto al código que comprueban.
+
+## Comprobaciones
+
+```sh
+pnpm --filter frontend test --watch=false
+pnpm --filter frontend build
 ```
 
-## Building
+Las pruebas verifican navegación pública, sesión, cuenta desactivada,
+suscripción y conversión de fechas. También se comprobó el frontend compilado
+en Brave con MySQL temporal y SMTP local: filtros, detalle, suscripción,
+publicación y edición de avisos, cancelación, catálogos, usuarios, perfil,
+permisos y vistas de escritorio/móvil.
 
-To build the project run:
+## Despliegue
 
-```bash
-ng build
-```
+El resultado se genera en `dist/frontend/browser`. El servidor debe devolver
+`index.html` para las rutas de Angular y reenviar `/api/**` al backend.
+El proxy de Angular solo funciona durante el desarrollo.
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Configura `FRONTEND_URL`, `API_PUBLIC_URL` y `CORS_ORIGIN` del backend con las
+URLs reales del despliegue para que los enlaces de correo y las peticiones
+funcionen correctamente. El frontend muestra datos reales de la API; las
+capturas de revisión utilizaron datos ficticios en una base temporal.

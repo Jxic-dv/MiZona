@@ -256,7 +256,7 @@ GET {{apiUrl}}/suscripciones/confirmar/{{tokenConfirmacion}}
 @tokenBaja = PEGA_AQUI_EL_TOKEN_DE_BAJA
 GET {{apiUrl}}/suscripciones/baja/{{tokenBaja}}
 
-### Consultar dashboard (200; ADMIN o FUNCIONARIO)
+### Consultar dashboard (200; solo ADMIN)
 GET {{apiUrl}}/dashboard
 Authorization: Bearer {{iniciarSesionAdmin.response.body.$.token}}
 

@@ -1,0 +1,12 @@
+<nav class="pagination" aria-label="Páginas de resultados">
+  <button class="button secondary" [disabled]="pagina() <= 1" (click)="ir(pagina() - 1)">
+    Anterior</button
+  ><span><ng-content /></span
+  ><button
+    class="button secondary"
+    [disabled]="pagina() >= totalPaginas()"
+    (click)="ir(pagina() + 1)"
+  >
+    Siguiente
+  </button>
+</nav>

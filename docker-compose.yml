@@ -10,10 +10,10 @@ services:
       MYSQL_PASSWORD: mizona123
     ports:
       - "3308:3306"
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     volumes:
       - mizona_data:/var/lib/mysql
       - ./db:/docker-entrypoint-initdb.d:ro
+      - ./docker/mysql/charset.cnf:/etc/mysql/conf.d/charset.cnf:ro
 
 volumes:
   mizona_data:

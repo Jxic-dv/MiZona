@@ -1,0 +1,74 @@
+<div class="page-heading">
+  <div>
+    <span class="eyebrow">CATÁLOGOS MUNICIPALES</span>
+    <h1>{{ tipo === 'zonas' ? 'Zonas de la ciudad' : 'Categorías de avisos' }}</h1>
+    <p>
+      {{
+        tipo === 'zonas'
+          ? 'Organiza las zonas disponibles para avisos y suscripciones.'
+          : 'Define los servicios que la comunidad puede consultar.'
+      }}
+    </p>
+  </div>
+</div>
+@if (error()) {
+  <div class="alert error" role="alert">
+    {{ error() }} <button class="text-link" (click)="cargar()">Reintentar</button>
+  </div>
+}
+@if (exito()) {
+  <div class="alert success" role="status">{{ exito() }}</div>
+}
+<form #form="ngForm" class="catalog-form form-card" (ngSubmit)="form.valid && guardar()">
+  <label
+    >{{ editando ? 'Editar nombre' : 'Agregar ' + (tipo === 'zonas' ? 'zona' : 'categoría')
+    }}<input
+      name="nombre"
+      [(ngModel)]="nombre"
+      required
+      minlength="2"
+      maxlength="40"
+      [placeholder]="tipo === 'zonas' ? 'Ej. Zona 1' : 'Ej. Agua potable'" /></label
+  ><button class="button primary" [disabled]="ocupado() || !form.valid">
+    <mz-icon [name]="editando ? 'check' : 'plus'" />{{ editando ? 'Guardar' : 'Agregar' }}
+  </button>
+  @if (editando) {
+    <button type="button" class="button secondary" (click)="limpiar()">Cancelar edición</button>
+  }
+</form>
+@if (eliminando(); as c) {
+  <div class="confirm-box" role="alert">
+    <h3>¿Eliminar “{{ c.nombre }}”?</h3>
+    <p>Solo es posible eliminar registros que no estén en uso.</p>
+    <div class="actions">
+      <button class="button danger" [disabled]="ocupado()" (click)="eliminar()">Eliminar</button
+      ><button class="button secondary" (click)="eliminando.set(null)" [disabled]="ocupado()">
+        Volver
+      </button>
+    </div>
+  </div>
+}
+@if (cargando()) {
+  <div class="loading-state" role="status"><span class="spinner"></span>Cargando catálogo…</div>
+} @else {
+  <div class="catalog-list">
+    @for (c of items(); track c.id) {
+      <div class="catalog-item">
+        <span class="service-icon small"
+          ><mz-icon [name]="tipo === 'zonas' ? 'pin' : 'works'" /></span
+        ><strong>{{ c.nombre }}</strong>
+        <div class="actions">
+          <button class="text-link" [disabled]="ocupado()" (click)="editar(c)">Editar</button
+          ><button class="text-link danger-text" [disabled]="ocupado()" (click)="eliminando.set(c)">
+            Eliminar
+          </button>
+        </div>
+      </div>
+    } @empty {
+      <div class="empty-state">
+        <h3>Aún no hay registros</h3>
+        <p>Agrega el primero usando el formulario.</p>
+      </div>
+    }
+  </div>
+}

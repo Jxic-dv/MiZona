@@ -1,0 +1,132 @@
+<mz-inicio-hero />
+<section class="container public-content" id="avisos">
+  <div class="section-heading">
+    <div>
+      <span class="eyebrow">MANTENTE AL DÍA</span>
+      <h2>Avisos de tu comunidad</h2>
+    </div>
+    <span class="section-note"><mz-icon name="pin" /> Ciudad de Guatemala</span>
+  </div>
+  <div class="category-tabs" aria-label="Filtrar por categoría">
+    <button [class.selected]="!filtros.categoriaId" (click)="categoria('')">
+      <mz-icon name="grid" /> Todos los servicios
+    </button>
+    @for (c of categorias(); track c.id) {
+      <button [class.selected]="filtros.categoriaId === '' + c.id" (click)="categoria(c.id)">
+        <mz-icon [name]="icono(c.nombre)" /> {{ c.nombre }}
+      </button>
+    }
+  </div>
+  @if (catalogError()) {
+    <div class="alert error" role="alert">
+      {{ catalogError() }}
+      <button class="text-link" (click)="catalogos()">Reintentar catálogos</button>
+    </div>
+  }
+  <form class="filter-bar" (ngSubmit)="buscar()">
+    <label class="search-field"
+      ><span class="sr-only">Buscar avisos</span><mz-icon name="search" /><input
+        name="q"
+        [(ngModel)]="filtros.q"
+        placeholder="¿Qué necesitas consultar?"
+        maxlength="100" /></label
+    ><label
+      ><span class="sr-only">Zona</span
+      ><select name="zona" [(ngModel)]="filtros.zonaId">
+        <option value="">Todas las zonas</option>
+        @for (z of zonas(); track z.id) {
+          <option [value]="z.id">{{ z.nombre }}</option>
+        }
+      </select></label
+    ><label
+      ><span class="sr-only">Estado</span
+      ><select name="estado" [(ngModel)]="filtros.estado">
+        <option value="VIGENTES">Avisos vigentes</option>
+        <option value="TODOS">Todo el historial</option>
+        <option value="ACTIVO">Activos</option>
+        <option value="PROGRAMADO">Programados</option>
+        <option value="FINALIZADO">Finalizados</option>
+        <option value="CANCELADO">Cancelados</option>
+      </select></label
+    ><button class="button primary" type="submit">Buscar <mz-icon name="arrow" /></button>
+  </form>
+  <details class="advanced-filters">
+    <summary>Fechas y orden de los avisos</summary>
+    <div class="form-row">
+      <label>Desde<input type="date" [(ngModel)]="filtros.desde" /></label
+      ><label>Hasta<input type="date" [(ngModel)]="filtros.hasta" /></label
+      ><label
+        >Orden<select [(ngModel)]="filtros.orden">
+          <option value="desc">Inicio más reciente</option>
+          <option value="asc">Inicio más antiguo</option>
+        </select></label
+      ><button class="button secondary" (click)="buscar()">Aplicar</button>
+    </div>
+  </details>
+  @if (cargando()) {
+    <div class="loading-state" role="status">
+      <span class="spinner"></span> Buscando avisos de tu comunidad…
+    </div>
+  } @else if (error()) {
+    <div class="empty-state">
+      <mz-icon name="bell" />
+      <h3>No pudimos cargar los avisos</h3>
+      <p role="alert">{{ error() }}</p>
+      <button class="button primary" (click)="cargar()">Volver a intentar</button>
+    </div>
+  } @else if (resultado(); as r) {
+    <div class="results-caption">
+      <span
+        ><strong>{{ r.total }}</strong>
+        {{ r.total === 1 ? 'aviso encontrado' : 'avisos encontrados' }}</span
+      ><button class="text-link subtle" (click)="limpiar()">Limpiar filtros</button>
+    </div>
+    @if (r.items.length) {
+      <div class="notice-grid">
+        @for (a of r.items; track a.id) {
+          <mz-aviso-card [aviso]="a" />
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <mz-icon name="search" />
+        <h3>Por aquí, sin novedades</h3>
+        <p>No hay avisos con estos filtros. Prueba otra zona o consulta el historial.</p>
+        <button class="button secondary" (click)="limpiar()">Ver avisos vigentes</button>
+      </div>
+    }
+    @if (r.totalPages > 1) {
+      <mz-paginacion [pagina]="pagina" [totalPaginas]="r.totalPages" (cambio)="buscar($event)"
+        >Página {{ pagina }} de {{ r.totalPages }}</mz-paginacion
+      >
+    }
+  }
+  <aside class="subscribe-banner">
+    <div class="banner-icon"><mz-icon name="bell" /></div>
+    <div>
+      <span class="eyebrow">QUE LOS AVISOS LLEGUEN A TI</span>
+      <h2>Tu zona cambia. Mantente al tanto.</h2>
+      <p>Elige tus zonas y recibe las novedades directamente en tu correo.</p>
+    </div>
+    <a routerLink="/suscribirme" class="button light"
+      >Quiero recibir avisos <mz-icon name="arrow"
+    /></a>
+  </aside>
+  <div class="how-it-works">
+    <div>
+      <span class="step-number">01</span>
+      <h3>Encuentra tu zona</h3>
+      <p>Consulta los servicios y las calles de tu comunidad.</p>
+    </div>
+    <div>
+      <span class="step-number">02</span>
+      <h3>Planifica tu día</h3>
+      <p>Revisa fechas, lugares y cambios en cada aviso.</p>
+    </div>
+    <div>
+      <span class="step-number">03</span>
+      <h3>Conecta con tu ciudad</h3>
+      <p>Suscríbete gratis y recibe información a tiempo.</p>
+    </div>
+  </div>
+</section>

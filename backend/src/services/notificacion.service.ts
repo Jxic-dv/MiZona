@@ -5,22 +5,16 @@ import * as suscriptorRepository from '../repositories/suscriptor.repository';
 import * as correoService from './correo.service';
 import { plantillaAviso } from './plantillas-correo';
 
-/**
- * Busca a los suscriptores confirmados de las zonas indicadas (sin repetir) y les envía el aviso.
- * Devuelve cuántos destinatarios hay; el envío ocurre en segundo plano para no hacer esperar al funcionario.
- */
+/** Busca destinatarios antes de guardar el cambio para no publicarlo si falla la consulta. */
+export const obtenerDestinatarios = suscriptorRepository.confirmadosPorZonas;
+
+/** Espera los envíos y su registro antes de responder; devuelve destinatarios, no entregas. */
 export async function notificar(
   aviso: Aviso,
   tipo: TipoNotificacion,
-  zonaIds: number[],
+  destinatarios: Destinatario[],
 ): Promise<number> {
-  const destinatarios = await suscriptorRepository.confirmadosPorZonas(zonaIds);
-
-  if (destinatarios.length > 0) {
-    void enviarATodos(aviso, tipo, destinatarios).catch((err) => {
-      console.error('[notificaciones] Error inesperado:', err);
-    });
-  }
+  await enviarATodos(aviso, tipo, destinatarios);
   return destinatarios.length;
 }
 

@@ -79,6 +79,7 @@ export function plantillaAviso(aviso: Aviso, tipo: TipoNotificacion, tokenBaja: 
   const filas: Array<[string, string]> = [
     ['Categoría', aviso.categoria.nombre],
     ['Zonas', zonas],
+    ['Estado', aviso.estado],
     ['Inicio', inicio],
     ['Fin estimado', fin],
   ];

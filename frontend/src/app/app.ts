@@ -1,12 +1,17 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-
+import { AuthService } from './services/auth.service';
+import { Navbar } from './components/navbar/navbar';
+import { Footer } from './components/footer/footer';
 @Component({
-  imports: [RouterOutlet],
   selector: 'app-root',
-  styleUrl: './app.css',
+  imports: [RouterOutlet, Navbar, Footer],
   templateUrl: './app.html',
+  styleUrl: './app.css',
 })
 export class App {
-  protected readonly title = signal('frontend');
+  private auth = inject(AuthService);
+  constructor() {
+    void this.auth.restaurar();
+  }
 }

@@ -1,0 +1,143 @@
+:host {
+  display: block;
+}
+.hero {
+  background: #edf1e5;
+  border-bottom: 1px solid #dfe6d5;
+  overflow: hidden;
+}
+.hero-layout {
+  display: grid;
+  grid-template-columns: 1.06fr 1fr;
+  gap: 45px;
+  align-items: center;
+  min-height: 425px;
+  padding-block: 50px;
+}
+.hero-copy h1 {
+  font-size: clamp(2rem, 3.5vw, 3.05rem);
+  letter-spacing: -0.055em;
+  line-height: 1.22;
+  margin-bottom: 20px;
+}
+.hero-copy > p {
+  font-size: 0.95rem;
+  color: #63725f;
+  max-width: 455px;
+  line-height: 1.85;
+}
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 23px;
+  margin-top: 26px;
+}
+.hero-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  color: #6b7a60;
+  margin-top: 23px;
+}
+.hero-art {
+  position: relative;
+  padding: 8px 0 26px;
+}
+.hero-art img {
+  display: block;
+  width: 100%;
+}
+.art-label {
+  position: absolute;
+  bottom: 42px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 19px;
+  border: 1px solid #e6e9dc;
+  background: #fdfdf7;
+  box-shadow: 0 5px 18px #3048300b;
+  border-radius: 8px;
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+.art-caption {
+  display: block;
+  font-size: 0.5rem;
+  text-align: center;
+  letter-spacing: 2.4px;
+  color: #7d8976;
+  margin-top: 22px;
+}
+@media (min-width: 1450px) {
+  .hero-layout {
+    min-height: 460px;
+  }
+  .hero-copy h1 {
+    font-size: 3.4rem;
+  }
+  .hero-art {
+    max-width: 570px;
+  }
+}
+@media (max-width: 1050px) {
+  .hero-layout {
+    gap: 25px;
+  }
+  .hero-actions {
+    gap: 16px;
+  }
+  .hero-actions .text-link {
+    font-size: 0.75rem;
+  }
+}
+@media (max-width: 760px) {
+  .hero-layout {
+    grid-template-columns: 1fr;
+    padding-block: 36px;
+    gap: 10px;
+  }
+  .hero-copy h1 {
+    font-size: 2.45rem;
+  }
+  .hero-copy > p {
+    max-width: 500px;
+  }
+  .hero-art {
+    max-width: 390px;
+    margin: 0 auto;
+    padding-bottom: 10px;
+  }
+  .hero-art img {
+    max-height: 245px;
+  }
+  .art-label {
+    bottom: 35px;
+    padding: 9px 15px;
+  }
+  .art-caption {
+    margin-top: 5px;
+  }
+  .hero-actions {
+    flex-wrap: wrap;
+  }
+  .hero-note {
+    margin-top: 18px;
+  }
+}
+@media (max-width: 460px) {
+  .hero-copy h1 {
+    font-size: 2.13rem;
+  }
+  .hero-actions .text-link {
+    font-size: 0.73rem;
+  }
+  .hero-actions .button {
+    font-size: 0.8rem;
+    padding-inline: 15px;
+  }
+}

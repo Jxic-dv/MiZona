@@ -1,0 +1,36 @@
+<div class="container panel-layout">
+  <aside class="panel-sidebar">
+    <span class="eyebrow">ESPACIO MUNICIPAL</span>
+    <h2>Mi panel</h2>
+    <nav aria-label="Gestión municipal">
+      @if (auth.usuario()?.rol === 'ADMIN') {
+        <a routerLink="/panel/resumen" routerLinkActive="selected"
+          ><mz-icon name="grid" /> Resumen</a
+        >
+      }
+      <a routerLink="/panel/avisos" routerLinkActive="selected"><mz-icon name="bell" /> Avisos</a>
+      @if (auth.usuario()?.rol === 'ADMIN') {
+        <a routerLink="/panel/zonas" routerLinkActive="selected"><mz-icon name="pin" /> Zonas</a
+        ><a routerLink="/panel/categorias" routerLinkActive="selected"
+          ><mz-icon name="works" /> Categorías</a
+        ><a routerLink="/panel/usuarios" routerLinkActive="selected"
+          ><mz-icon name="user" /> Usuarios</a
+        >
+      }
+      <a routerLink="/panel/perfil" routerLinkActive="selected"
+        ><mz-icon name="shield" /> Mi perfil</a
+      >
+    </nav>
+    <div class="sidebar-user">
+      <span class="avatar">{{ auth.usuario()?.nombre?.charAt(0) }}</span>
+      <div>
+        <strong>{{ auth.usuario()?.nombre }}</strong
+        ><small>{{ auth.usuario()?.rol === 'ADMIN' ? 'Administrador' : 'Funcionario' }}</small>
+      </div>
+    </div>
+    <button class="text-link logout" (click)="auth.salir()">
+      <mz-icon name="logout" /> Cerrar sesión
+    </button>
+  </aside>
+  <section class="panel-content"><router-outlet /></section>
+</div>

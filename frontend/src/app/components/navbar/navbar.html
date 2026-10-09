@@ -1,0 +1,39 @@
+<div class="community-bar">
+  <div class="container">
+    <span><span class="live-dot"></span> Una ciudad informada, una comunidad conectada</span
+    ><span>Ciudad de Guatemala <mz-icon name="pin" /></span>
+  </div>
+</div>
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" routerLink="/" aria-label="MiZona, inicio"
+      ><span class="brand-icon"><mz-icon name="pin" /></span
+      ><span
+        >Mi<span class="brand-accent">Zona</span><small>LO QUE PASA CERCA DE TI</small></span
+      ></a
+    >
+    <button
+      class="button secondary mobile-menu"
+      (click)="menu.set(!menu())"
+      [attr.aria-expanded]="menu()"
+      aria-label="Abrir navegación"
+    >
+      Menú
+    </button>
+    <nav aria-label="Navegación principal" [class.open]="menu()" (click)="menu.set(false)">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+        >Avisos de mi ciudad</a
+      >
+      <a routerLink="/suscribirme" routerLinkActive="active">Recibir avisos</a>
+      @if (auth.usuario()) {
+        <a routerLink="/panel/avisos" routerLinkActive="active" class="button secondary"
+          ><mz-icon name="grid" /> Mi panel</a
+        >
+      } @else {
+        <a routerLink="/acceso" routerLinkActive="active" class="staff-link"
+          ><mz-icon name="user" /> Acceso municipal</a
+        >
+      }
+    </nav>
+  </div>
+</header>

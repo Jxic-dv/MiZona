@@ -1,0 +1,86 @@
+<div class="container page-space split-page">
+  <div class="intro-column">
+    <span class="eyebrow">CERCA, INCLUSO A DISTANCIA</span>
+    <h1>Tu comunidad,<br /><em>en tu bandeja.</em></h1>
+    <p>Los avisos de las zonas que te importan, directamente en tu correo. Sin crear una cuenta.</p>
+    <div class="benefit">
+      <mz-icon name="pin" />
+      <div>
+        <h3>Tú eliges las zonas</h3>
+        <p>Tu casa, tu trabajo o donde viven los tuyos.</p>
+      </div>
+    </div>
+    <div class="benefit">
+      <mz-icon name="bell" />
+      <div>
+        <h3>Entérate de los cambios</h3>
+        <p>Recibe nuevos avisos, actualizaciones y cancelaciones.</p>
+      </div>
+    </div>
+    <div class="benefit">
+      <mz-icon name="shield" />
+      <div>
+        <h3>Tú tienes el control</h3>
+        <p>Confirma tu correo y cancela cuando quieras desde cualquier mensaje.</p>
+      </div>
+    </div>
+    <img class="subscription-art" src="/barrio.svg" alt="" width="620" height="370" />
+  </div>
+  <section class="form-card">
+    @if (exito()) {
+      <div class="success-state" role="status">
+        <span class="success-icon"><mz-icon name="mail" /></span
+        ><span class="eyebrow">UN PASO MÁS</span>
+        <h2>Revisa tu correo</h2>
+        <p>{{ exito() }}</p>
+        <p class="help">
+          Abre el enlace de confirmación para empezar a recibir avisos. Si no lo encuentras, revisa
+          la carpeta de spam.
+        </p>
+        <a routerLink="/" class="button primary">Consultar avisos <mz-icon name="arrow" /></a>
+      </div>
+    } @else {
+      <span class="eyebrow">SUSCRIPCIÓN GRATUITA</span>
+      <h2>No te pierdas lo importante</h2>
+      <p>Selecciona tus zonas y confirma tu correo.</p>
+      @if (error()) {
+        <div class="alert error" role="alert">{{ error() }}</div>
+      }
+      <form #form="ngForm" (ngSubmit)="form.valid && enviar()">
+        <label
+          >Correo electrónico<input
+            name="email"
+            type="email"
+            [(ngModel)]="email"
+            required
+            email
+            maxlength="150"
+            placeholder="tu.correo@ejemplo.com"
+            autocomplete="email"
+        /></label>
+        <fieldset>
+          <legend>Zonas que te interesan <span class="required">*</span></legend>
+          @if (cargando()) {
+            <p role="status">Cargando zonas…</p>
+          } @else if (!zonas().length) {
+            <p>No se pudieron cargar las zonas.</p>
+            <button type="button" class="button secondary" (click)="cargar()">Reintentar</button>
+          }
+          <mz-selector-zonas [zonas]="zonas()" [(seleccionadas)]="seleccionadas" />
+          <p class="help">{{ seleccionadas.length }} zonas seleccionadas · Elige al menos una.</p>
+        </fieldset>
+        <button
+          class="button primary full"
+          [disabled]="enviando() || cargando() || !form.valid || !seleccionadas.length"
+        >
+          {{ enviando() ? 'Enviando confirmación…' : 'Recibir avisos de mis zonas' }}
+          <mz-icon name="arrow" />
+        </button>
+        <p class="privacy-note">
+          <mz-icon name="shield" /> Solo avisos de tus zonas. Puedes darte de baja en cualquier
+          momento.
+        </p>
+      </form>
+    }
+  </section>
+</div>

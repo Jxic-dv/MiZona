@@ -1,0 +1,125 @@
+:host {
+  display: block;
+}
+.panel-layout {
+  display: grid;
+  grid-template-columns: 205px minmax(0, 1fr);
+  gap: 42px;
+  padding-block: 38px;
+  min-height: 650px;
+}
+.panel-sidebar {
+  border-right: 1px solid var(--line);
+  padding: 12px 22px 20px 0;
+}
+.panel-sidebar .eyebrow {
+  font-size: 0.56rem;
+  letter-spacing: 1.2px;
+  margin-bottom: 9px;
+}
+.panel-sidebar h2 {
+  font-size: 1.5rem;
+  margin-bottom: 24px;
+}
+.panel-sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.panel-sidebar nav a {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 12px 13px;
+  border-radius: 7px;
+  color: var(--muted);
+  font-size: 0.84rem;
+  text-decoration: none;
+}
+.panel-sidebar nav a.selected {
+  color: var(--pine);
+  background: #e3ebdb;
+  font-weight: 650;
+}
+.panel-sidebar nav a:hover {
+  background: #eaf0e3;
+}
+.sidebar-user {
+  border-top: 1px solid var(--line);
+  margin-top: 32px;
+  padding-top: 23px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.avatar {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #dce6d0;
+  color: var(--pine);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.sidebar-user strong {
+  font-size: 0.72rem;
+  display: block;
+  overflow-wrap: anywhere;
+}
+.sidebar-user small {
+  font-size: 0.65rem;
+  color: var(--muted);
+}
+.logout {
+  font-size: 0.75rem;
+  margin-top: 22px;
+}
+@media (max-width: 1050px) {
+  .panel-layout {
+    grid-template-columns: 175px minmax(0, 1fr);
+    gap: 25px;
+  }
+  .panel-sidebar {
+    padding-right: 15px;
+  }
+}
+@media (max-width: 760px) {
+  .panel-layout {
+    grid-template-columns: 1fr;
+    padding-top: 24px;
+    gap: 22px;
+  }
+  .panel-sidebar {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+    padding: 0 0 15px;
+  }
+  .panel-sidebar > .eyebrow {
+    display: none;
+  }
+  .panel-sidebar > h2 {
+    display: none;
+  }
+  .sidebar-user {
+    display: none;
+  }
+  .panel-sidebar nav {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 3px;
+  }
+  .panel-sidebar nav a {
+    white-space: nowrap;
+    padding: 9px 11px;
+    font-size: 0.76rem;
+  }
+  .logout {
+    margin-top: 12px;
+    font-size: 0.7rem;
+  }
+  .panel-content {
+    min-width: 0;
+  }
+}

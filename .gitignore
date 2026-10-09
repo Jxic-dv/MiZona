@@ -12,7 +12,7 @@ typings/
 __screenshots__/
 
 # Tool caches
-.angular/cache/
+**/.angular/cache/
 .sass-cache/
 .cache/
 .vite/

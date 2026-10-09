@@ -1,0 +1,26 @@
+@let a = aviso();
+<article class="notice-card">
+  <div class="notice-top">
+    <span class="service-icon" [attr.data-icon]="icono(a.categoria.nombre)"
+      ><mz-icon [name]="icono(a.categoria.nombre)" /></span
+    ><span class="badge" [attr.data-state]="a.estado"><span></span>{{ estados[a.estado] }}</span>
+  </div>
+  <span class="card-category">{{ a.categoria.nombre }}</span>
+  <h3>
+    <a [routerLink]="['/avisos', a.id]">{{ a.titulo }}</a>
+  </h3>
+  <p class="card-description">
+    {{ a.descripcion || 'Consulta las zonas, fechas y detalles de este aviso.' }}
+  </p>
+  <div class="card-info">
+    <span
+      ><mz-icon name="pin" />
+      @for (z of a.zonas; track z.id; let last = $last) {
+        {{ z.nombre }}{{ last ? '' : ', ' }}
+      }</span
+    ><span><mz-icon name="clock" />{{ fecha(a.fechaInicio) }}</span>
+  </div>
+  <a class="card-link" [routerLink]="['/avisos', a.id]"
+    >Ver detalles del aviso <mz-icon name="arrow"
+  /></a>
+</article>

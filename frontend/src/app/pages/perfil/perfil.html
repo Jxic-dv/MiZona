@@ -1,0 +1,60 @@
+<div class="page-heading">
+  <div>
+    <span class="eyebrow">TU CUENTA</span>
+    <h1>Mi perfil</h1>
+    <p>Mantén tus datos al día y protege tu acceso.</p>
+  </div>
+</div>
+@if (error()) {
+  <div class="alert error" role="alert">{{ error() }}</div>
+}
+@if (exito()) {
+  <div class="alert success" role="status">{{ exito() }}</div>
+}
+<form class="form-card profile-form" #form="ngForm" (ngSubmit)="form.valid && guardar()">
+  <h2>Datos personales</h2>
+  <label
+    >Nombre completo<input
+      name="nombre"
+      [(ngModel)]="nombre"
+      minlength="2"
+      maxlength="120"
+      required
+      autocomplete="name" /></label
+  ><label
+    >Correo electrónico<input [value]="auth.usuario()?.email" disabled /><span class="help"
+      >El correo identifica tu cuenta y no se puede cambiar desde aquí.</span
+    ></label
+  >
+  <div class="form-section-heading"><h2>Cambiar contraseña</h2></div>
+  <p class="help">Deja estos campos vacíos si quieres mantener la contraseña actual.</p>
+  <label
+    >Contraseña actual<input
+      type="password"
+      name="actual"
+      [(ngModel)]="actual"
+      [required]="!!nueva"
+      autocomplete="current-password"
+  /></label>
+  <div class="form-row">
+    <label
+      >Nueva contraseña<input
+        type="password"
+        name="nueva"
+        [(ngModel)]="nueva"
+        minlength="8"
+        maxlength="72"
+        autocomplete="new-password" /></label
+    ><label
+      >Repetir nueva contraseña<input
+        type="password"
+        name="repetir"
+        [(ngModel)]="repetir"
+        [required]="!!nueva"
+        autocomplete="new-password"
+    /></label>
+  </div>
+  <button class="button primary" [disabled]="ocupado() || !form.valid">
+    {{ ocupado() ? 'Guardando…' : 'Guardar cambios' }}
+  </button>
+</form>

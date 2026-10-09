@@ -1,0 +1,95 @@
+<div class="page-heading">
+  <div>
+    <span class="eyebrow">ADMINISTRACIÓN</span>
+    <h1>Usuarios municipales</h1>
+    <p>Activa las solicitudes de acceso y administra las cuentas del equipo.</p>
+  </div>
+</div>
+@if (error()) {
+  <div class="alert error" role="alert">
+    {{ error() }} <button class="text-link" (click)="cargar()">Reintentar</button>
+  </div>
+}
+@if (exito()) {
+  <div class="alert success" role="status">{{ exito() }}</div>
+}
+<form class="filter-bar compact" (ngSubmit)="page = 1; cargar()">
+  <input
+    aria-label="Buscar usuario"
+    name="q"
+    [(ngModel)]="q"
+    placeholder="Buscar nombre o correo"
+    maxlength="100"
+  /><select aria-label="Estado de cuenta" name="activo" [(ngModel)]="activo">
+    <option value="">Todas las cuentas</option>
+    <option value="false">Inactivas / pendientes</option>
+    <option value="true">Activas</option></select
+  ><button class="button secondary">Buscar</button>
+</form>
+@if (confirmar(); as u) {
+  <div class="confirm-box" role="alert">
+    <h3>¿{{ u.activo ? 'Desactivar' : 'Activar' }} a {{ u.nombre }}?</h3>
+    <p>
+      {{
+        u.activo
+          ? 'Su acceso al panel quedará bloqueado.'
+          : 'Podrá iniciar sesión y gestionar avisos.'
+      }}
+    </p>
+    <div class="actions">
+      <button class="button primary" [disabled]="ocupado()" (click)="cambiar()">
+        {{ ocupado() ? 'Guardando…' : 'Confirmar' }}</button
+      ><button class="button secondary" [disabled]="ocupado()" (click)="confirmar.set(null)">
+        Volver
+      </button>
+    </div>
+  </div>
+}
+@if (cargando()) {
+  <div class="loading-state" role="status">Cargando usuarios…</div>
+} @else if (resultado(); as r) {
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Usuario</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (u of r.items; track u.id) {
+          <tr>
+            <td>
+              <strong>{{ u.nombre }}</strong
+              ><small>{{ u.email }}</small>
+            </td>
+            <td>{{ u.rol === 'ADMIN' ? 'Administrador' : 'Funcionario' }}</td>
+            <td>
+              <span class="badge" [attr.data-state]="u.activo ? 'ACTIVO' : 'CANCELADO'">{{
+                u.activo ? 'Activa' : 'Inactiva'
+              }}</span>
+            </td>
+            <td>
+              @if (u.id !== auth.usuario()?.id) {
+                <button class="text-link" (click)="confirmar.set(u)">
+                  {{ u.activo ? 'Desactivar' : 'Activar' }}
+                </button>
+              } @else {
+                <span class="help">Tu cuenta</span>
+              }
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="4" class="table-empty">No hay usuarios con estos filtros.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <mz-paginacion [pagina]="page" [totalPaginas]="r.totalPages" (cambio)="page = $event; cargar()"
+    >{{ r.total }} usuarios · {{ page }} / {{ r.totalPages || 1 }}</mz-paginacion
+  >
+}

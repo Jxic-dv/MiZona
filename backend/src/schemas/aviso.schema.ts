@@ -13,6 +13,10 @@ function diaGuatemala(finDelDia: boolean) {
   return z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, 'Usa el formato AAAA-MM-DD')
+    .refine((dia) => {
+      const fecha = new Date(`${dia}T00:00:00.000Z`);
+      return !Number.isNaN(fecha.getTime()) && fecha.toISOString().slice(0, 10) === dia;
+    }, 'La fecha no es válida')
     .transform((dia) => new Date(`${dia}T${finDelDia ? '23:59:59.999' : '00:00:00.000'}-06:00`))
     .refine((fecha) => !Number.isNaN(fecha.getTime()), 'La fecha no es válida');
 }
@@ -53,6 +57,9 @@ export const listarAvisosQuery = z.object({
   orden: z.enum(['asc', 'desc']).default('desc'),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(10),
+}).refine((datos) => !datos.desde || !datos.hasta || datos.desde <= datos.hasta, {
+  message: 'La fecha hasta debe ser igual o posterior a desde',
+  path: ['hasta'],
 });
 
 export type AvisoInput = z.infer<typeof avisoSchema>;

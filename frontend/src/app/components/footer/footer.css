@@ -1,0 +1,76 @@
+:host {
+  display: block;
+}
+.site-footer {
+  border-top: 1px solid var(--line);
+  background: var(--paper);
+  padding: 36px 0;
+}
+.footer-inner {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+}
+.footer-inner p {
+  font-size: 0.8rem;
+  line-height: 1.8;
+}
+.footer-inner p span {
+  color: var(--muted);
+}
+.footer-inner > a:last-child {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+@media (max-width: 760px) {
+  .footer-inner {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .footer-inner p {
+    flex: 1;
+    min-width: 190px;
+  }
+  .footer-inner > a:last-child {
+    margin-left: 0;
+  }
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--display);
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--pine);
+  text-decoration: none;
+  letter-spacing: -1px;
+}
+.brand-icon {
+  display: grid;
+  place-items: center;
+  background: var(--pine);
+  color: var(--lime);
+  border-radius: 12px;
+  width: 42px;
+  height: 46px;
+}
+.brand-icon mz-icon {
+  font-size: 24px;
+}
+.brand-accent {
+  color: var(--green);
+}
+.brand small {
+  display: block;
+  letter-spacing: 1.65px;
+  font-family: var(--body);
+  font-size: 0.5rem;
+  margin-top: 2px;
+  font-weight: 600;
+}

@@ -1,0 +1,21 @@
+:host {
+  display: block;
+}
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 28px;
+  font-size: 0.78rem;
+}
+@media (max-width: 460px) {
+  .pagination {
+    gap: 10px;
+    font-size: 0.67rem;
+  }
+  .pagination .button {
+    padding: 10px 13px;
+    font-size: 0.72rem;
+  }
+}

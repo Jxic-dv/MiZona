@@ -1,0 +1,116 @@
+<div class="page-heading">
+  <div>
+    <span class="eyebrow">INFORMACIÓN PARA TU COMUNIDAD</span>
+    <h1>Gestión de avisos</h1>
+    <p>Consulta las publicaciones y gestiona las que te corresponden.</p>
+  </div>
+  <a class="button primary" routerLink="/panel/avisos/nuevo"><mz-icon name="plus" /> Nuevo aviso</a>
+</div>
+@if (exito()) {
+  <div class="alert success" role="status">{{ exito() }}</div>
+}
+@if (error()) {
+  <div class="alert error" role="alert">
+    {{ error() }} <button class="text-link" (click)="cargar()">Reintentar</button>
+  </div>
+}
+<form class="filter-bar compact" (ngSubmit)="page = 1; cargar()">
+  <label class="search-field"
+    ><span class="sr-only">Buscar avisos</span><mz-icon name="search" /><input
+      name="q"
+      [(ngModel)]="q"
+      placeholder="Buscar por título, descripción o lugar" /></label
+  ><select aria-label="Estado" name="estado" [(ngModel)]="estado">
+    <option value="TODOS">Todos los estados</option>
+    @for (e of opciones; track e) {
+      <option [value]="e">{{ estados[e] }}</option>
+    }</select
+  ><button class="button secondary">Buscar</button>
+</form>
+@if (confirmacion(); as c) {
+  <section class="confirm-box" role="alert">
+    <h3>
+      {{
+        c.accion === 'eliminar'
+          ? '¿Eliminar definitivamente este aviso?'
+          : c.accion === 'cancelar'
+            ? '¿Cancelar este aviso?'
+            : '¿Marcar el aviso como finalizado?'
+      }}
+    </h3>
+    <p>
+      “{{ c.aviso.titulo }}”.
+      {{
+        c.accion === 'eliminar'
+          ? 'También se eliminará su registro de notificaciones. Esta acción no se puede deshacer.'
+          : 'El aviso dejará de estar vigente y se notificará a los suscriptores de sus zonas.'
+      }}
+    </p>
+    <div class="actions">
+      <button class="button danger" [disabled]="ocupado()" (click)="ejecutar()">
+        {{ ocupado() ? 'Procesando…' : 'Confirmar' }}</button
+      ><button class="button secondary" [disabled]="ocupado()" (click)="confirmacion.set(null)">
+        Volver
+      </button>
+    </div>
+  </section>
+}
+@if (cargando()) {
+  <div class="loading-state" role="status"><span class="spinner"></span>Cargando avisos…</div>
+} @else if (resultado(); as r) {
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Aviso / zona</th>
+          <th>Estado</th>
+          <th>Inicio</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (a of r.items; track a.id) {
+          <tr>
+            <td>
+              <a class="table-title" [routerLink]="['/avisos', a.id]">{{ a.titulo }}</a
+              ><small>
+                @for (z of a.zonas; track z.id; let last = $last) {
+                  {{ z.nombre }}{{ last ? '' : ', ' }}
+                }
+                · {{ a.creadoPor.nombre }}</small
+              >
+            </td>
+            <td>
+              <span class="badge" [attr.data-state]="a.estado">{{ estados[a.estado] }}</span>
+            </td>
+            <td class="date-cell">{{ fecha(a.fechaInicio) }}</td>
+            <td>
+              <div class="table-actions">
+                <a class="text-link" [routerLink]="['/avisos', a.id]">Ver</a>
+                @if (puede(a) && (a.estado === 'ACTIVO' || a.estado === 'PROGRAMADO')) {
+                  <a class="text-link" [routerLink]="['/panel/avisos', a.id, 'editar']">Editar</a
+                  ><button class="text-link" (click)="pedir(a, 'finalizar')">Finalizar</button
+                  ><button class="text-link danger-text" (click)="pedir(a, 'cancelar')">
+                    Cancelar
+                  </button>
+                }
+                @if (auth.usuario()?.rol === 'ADMIN') {
+                  <button class="text-link danger-text" (click)="pedir(a, 'eliminar')">
+                    Eliminar
+                  </button>
+                }
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="4" class="table-empty">No hay avisos con estos filtros.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <mz-paginacion [pagina]="page" [totalPaginas]="r.totalPages" (cambio)="page = $event; cargar()"
+    >{{ r.total }} avisos · Página {{ page }} de {{ r.totalPages || 1 }}</mz-paginacion
+  >
+}

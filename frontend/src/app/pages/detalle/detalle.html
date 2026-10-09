@@ -1,0 +1,59 @@
+<div class="container page-space narrow">
+  <a class="back-link" routerLink="/">← Volver a los avisos</a>
+  @if (cargando()) {
+    <div class="loading-state" role="status"><span class="spinner"></span>Cargando aviso…</div>
+  } @else if (error()) {
+    <div class="empty-state">
+      <h1>No se pudo abrir el aviso</h1>
+      <p role="alert">{{ error() }}</p>
+      <button class="button primary" (click)="cargar()">Reintentar</button>
+    </div>
+  } @else if (aviso(); as a) {
+    <article class="detail-card">
+      <div class="detail-top">
+        <span class="service-icon"><mz-icon [name]="icono(a.categoria.nombre)" /></span
+        ><span class="badge" [attr.data-state]="a.estado">{{ estados[a.estado] }}</span>
+      </div>
+      <span class="eyebrow">{{ a.categoria.nombre }}</span>
+      <h1>{{ a.titulo }}</h1>
+      <p class="detail-description">
+        {{ a.descripcion || 'Este aviso no incluye una descripción adicional.' }}
+      </p>
+      <dl class="detail-facts">
+        <div>
+          <dt><mz-icon name="pin" /> Zonas afectadas</dt>
+          <dd>
+            @for (z of a.zonas; track z.id) {
+              <span class="tag">{{ z.nombre }}</span>
+            }
+          </dd>
+        </div>
+        <div>
+          <dt><mz-icon name="works" /> Ubicación</dt>
+          <dd>{{ a.ubicacionDetalle || 'Consulta las zonas indicadas' }}</dd>
+        </div>
+        <div>
+          <dt><mz-icon name="clock" /> Inicio</dt>
+          <dd>{{ fecha(a.fechaInicio) }}</dd>
+        </div>
+        <div>
+          <dt><mz-icon name="clock" /> Fin estimado</dt>
+          <dd>{{ fecha(a.fechaFinEstimada) }}</dd>
+        </div>
+      </dl>
+      <p class="help">Fechas en hora de Guatemala. El fin estimado puede cambiar.</p>
+      <div class="detail-footer">
+        Publicado por {{ a.creadoPor.nombre
+        }}<span>Última actualización: {{ fecha(a.updatedAt) }}</span>
+      </div>
+    </article>
+    <aside class="inline-cta">
+      <mz-icon name="bell" />
+      <div>
+        <h3>Recibe las próximas novedades</h3>
+        <p>Suscríbete a las zonas que te interesan.</p>
+      </div>
+      <a class="button primary" routerLink="/suscribirme">Suscribirme</a>
+    </aside>
+  }
+</div>

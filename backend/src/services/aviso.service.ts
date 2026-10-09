@@ -67,6 +67,8 @@ export async function crear(usuario: TokenPayload, datos: AvisoInput): Promise<R
   validarFechaFin(datos);
   const zonaIds = [...new Set<number>(datos.zonaIds)];
 
+  const receptores = await notificacionService.obtenerDestinatarios(zonaIds);
+
   const id = await conTransaccion(async (conn) => {
     const nuevoId = await avisoRepository.insertar(conn, {
       ...camposAviso(datos),
@@ -78,7 +80,7 @@ export async function crear(usuario: TokenPayload, datos: AvisoInput): Promise<R
   });
 
   const aviso = await obtener(id);
-  const destinatarios = await notificacionService.notificar(aviso, 'NUEVO', zonaIds);
+  const destinatarios = await notificacionService.notificar(aviso, 'NUEVO', receptores);
   return { aviso, destinatarios };
 }
 
@@ -93,6 +95,9 @@ export async function actualizar(
   validarFechaFin(datos);
   const zonaIds = [...new Set<number>(datos.zonaIds)];
 
+  const zonasAfectadas = [...new Set([...actual.zonas.map((zona) => zona.id), ...zonaIds])];
+  const receptores = await notificacionService.obtenerDestinatarios(zonasAfectadas);
+
   await conTransaccion(async (conn) => {
     await avisoRepository.actualizar(conn, id, {
       ...camposAviso(datos),
@@ -102,9 +107,7 @@ export async function actualizar(
   });
 
   const aviso = await obtener(id);
-  // Se avisa a los suscriptores de las zonas anteriores y de las nuevas
-  const zonasAfectadas = [...new Set([...actual.zonas.map((zona) => zona.id), ...zonaIds])];
-  const destinatarios = await notificacionService.notificar(aviso, 'ACTUALIZACION', zonasAfectadas);
+  const destinatarios = await notificacionService.notificar(aviso, 'ACTUALIZACION', receptores);
   return { aviso, destinatarios };
 }
 
@@ -113,12 +116,13 @@ export async function cancelar(usuario: TokenPayload, id: number): Promise<Resul
   verificarPropiedad(usuario, actual);
   verificarModificable(actual);
 
+  const receptores = await notificacionService.obtenerDestinatarios(actual.zonas.map((zona) => zona.id));
   await avisoRepository.cambiarEstado(id, 'CANCELADO');
   const aviso = await obtener(id);
   const destinatarios = await notificacionService.notificar(
     aviso,
     'CANCELACION',
-    aviso.zonas.map((zona) => zona.id),
+    receptores,
   );
   return { aviso, destinatarios };
 }
@@ -128,8 +132,11 @@ export async function finalizar(usuario: TokenPayload, id: number): Promise<Avis
   verificarPropiedad(usuario, actual);
   verificarModificable(actual);
 
+  const receptores = await notificacionService.obtenerDestinatarios(actual.zonas.map((zona) => zona.id));
   await avisoRepository.cambiarEstado(id, 'FINALIZADO');
-  return obtener(id);
+  const aviso = await obtener(id);
+  await notificacionService.notificar(aviso, 'ACTUALIZACION', receptores);
+  return aviso;
 }
 
 export async function eliminar(id: number): Promise<void> {

@@ -3,9 +3,17 @@ import { config } from '../config/env';
 
 let transporte: Promise<Transporter> | null = null;
 
+// Evita que una solicitud espere indefinidamente cuando SMTP no responde.
+const tiemposEspera = {
+  connectionTimeout: 10_000,
+  greetingTimeout: 10_000,
+  socketTimeout: 20_000,
+};
+
 async function crearTransporte(): Promise<Transporter> {
   if (config.smtp.host) {
     return nodemailer.createTransport({
+      ...tiemposEspera,
       host: config.smtp.host,
       port: config.smtp.port,
       secure: config.smtp.port === 465,
@@ -17,6 +25,7 @@ async function crearTransporte(): Promise<Transporter> {
   const cuenta = await nodemailer.createTestAccount();
   console.log(`[correo] Sin SMTP configurado, se usa una cuenta de prueba de Ethereal (${cuenta.user}).`);
   return nodemailer.createTransport({
+    ...tiemposEspera,
     host: cuenta.smtp.host,
     port: cuenta.smtp.port,
     secure: cuenta.smtp.secure,

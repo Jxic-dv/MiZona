@@ -1,0 +1,126 @@
+<a routerLink="/panel/avisos" class="back-link">← Volver a la gestión de avisos</a>
+<div class="page-heading">
+  <div>
+    <span class="eyebrow">INFORMA A TU COMUNIDAD</span>
+    <h1>{{ id ? 'Editar aviso' : 'Publicar un aviso' }}</h1>
+    <p>La información clara ayuda a los vecinos a planificar su día.</p>
+  </div>
+</div>
+@if (cargando()) {
+  <div class="loading-state" role="status"><span class="spinner"></span>Preparando formulario…</div>
+} @else if (guardado()) {
+  <div class="form-card success-state" role="status">
+    <span class="success-icon"><mz-icon name="check" /></span>
+    <h2>Tu información ya está publicada</h2>
+    <p>{{ exito() }}</p>
+    <div class="actions">
+      <a class="button primary" [routerLink]="['/avisos', guardado()]">Ver aviso</a
+      ><a class="button secondary" routerLink="/panel/avisos">Ir a mis avisos</a>
+    </div>
+  </div>
+} @else {
+  @if (error()) {
+    <div class="alert error" role="alert">{{ error() }}</div>
+  }
+  @if (permitido() && zonas().length && categorias().length) {
+    <form class="form-card editor-form" #form="ngForm" (ngSubmit)="form.valid && guardar()">
+      <div class="form-section-heading">
+        <span class="step-number">01</span>
+        <h2>Información del aviso</h2>
+      </div>
+      <label
+        >Título <span class="required">*</span
+        ><input
+          name="titulo"
+          [(ngModel)]="datos.titulo"
+          required
+          minlength="5"
+          maxlength="150"
+          placeholder="Ej. Suspensión temporal del servicio de agua"
+        /><span class="help"
+          >Entre 5 y 150 caracteres. Usa un título claro y específico.</span
+        ></label
+      ><label
+        >Categoría <span class="required">*</span
+        ><select name="categoria" [(ngModel)]="datos.categoriaId" required>
+          <option [ngValue]="0" disabled>Selecciona un servicio</option>
+          @for (c of categorias(); track c.id) {
+            <option [ngValue]="c.id">{{ c.nombre }}</option>
+          }
+        </select></label
+      ><label
+        >Descripción<textarea
+          name="descripcion"
+          rows="5"
+          [(ngModel)]="datos.descripcion"
+          maxlength="2000"
+          placeholder="Explica qué sucederá, el motivo y las recomendaciones para los vecinos."
+        ></textarea
+        ><span class="help">{{ datos.descripcion.length }} / 2000 caracteres</span></label
+      >
+      <div class="form-section-heading">
+        <span class="step-number">02</span>
+        <h2>Lugar y zonas afectadas</h2>
+      </div>
+      <fieldset>
+        <legend>Zonas <span class="required">*</span></legend>
+        <mz-selector-zonas [zonas]="zonas()" [(seleccionadas)]="datos.zonaIds" [columnas]="5" />
+        <p class="help">Selecciona entre 1 y 25 zonas.</p>
+      </fieldset>
+      <label
+        >Ubicación detallada<input
+          name="ubicacion"
+          [(ngModel)]="datos.ubicacionDetalle"
+          maxlength="250"
+          placeholder="Ej. 6ª avenida, entre 3ª y 5ª calle"
+      /></label>
+      <div class="form-section-heading">
+        <span class="step-number">03</span>
+        <h2>Fechas del servicio</h2>
+      </div>
+      <div class="form-row">
+        <label
+          >Inicio <span class="required">*</span
+          ><input
+            type="datetime-local"
+            name="inicio"
+            [(ngModel)]="datos.fechaInicio"
+            required /></label
+        ><label
+          >Fin estimado<input type="datetime-local" name="fin" [(ngModel)]="datos.fechaFinEstimada"
+        /></label>
+      </div>
+      <p class="help">
+        Hora de Guatemala (UTC−6). Si no conoces el fin, déjalo vacío. Un inicio futuro crea un
+        aviso programado.
+      </p>
+      <div class="alert info">
+        <mz-icon name="bell" /> Al guardar, el aviso será público y se intentará notificar a los
+        vecinos suscritos a las zonas afectadas.
+      </div>
+      <div class="actions">
+        <button
+          class="button primary"
+          [disabled]="
+            ocupado() ||
+            !form.valid ||
+            !datos.categoriaId ||
+            !datos.zonaIds.length ||
+            datos.zonaIds.length > 25
+          "
+        >
+          {{
+            ocupado() ? 'Guardando y enviando avisos…' : id ? 'Guardar cambios' : 'Publicar aviso'
+          }}
+          <mz-icon name="arrow" /></button
+        ><a class="button secondary" routerLink="/panel/avisos">Volver</a>
+      </div>
+    </form>
+  } @else if (permitido()) {
+    <div class="empty-state">
+      <h2>Necesitas zonas y categorías</h2>
+      <p>Un administrador debe completar los catálogos para publicar avisos.</p>
+      <button class="button secondary" (click)="cargar()">Reintentar</button>
+    </div>
+  }
+}

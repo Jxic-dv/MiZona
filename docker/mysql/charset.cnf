@@ -1,0 +1,7 @@
+# UTF-8 para el servidor y para importaciones con mysql dentro del contenedor.
+[mysqld]
+character-set-server=utf8mb4
+collation-server=utf8mb4_unicode_ci
+
+[client]
+default-character-set=utf8mb4

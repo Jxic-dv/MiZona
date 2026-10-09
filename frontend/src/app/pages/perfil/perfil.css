@@ -1,0 +1,9 @@
+:host {
+  display: block;
+}
+.profile-form {
+  max-width: 660px;
+}
+.profile-form h2 {
+  font-size: 1.25rem;
+}
